@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Lab Academy</title>
+    
+    <!-- Custom Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ef4444' rx='12'/%3E%3Cg fill='white'%3E%3Crect x='12' y='40' width='7' height='16' rx='1'/%3E%3Crect x='24' y='28' width='7' height='28' rx='1'/%3E%3Crect x='36' y='36' width='7' height='20' rx='1'/%3E%3Crect x='48' y='16' width='7' height='40' rx='1'/%3E%3Cline x1='8' y1='56' x2='60' y2='56' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='8' y1='56' x2='8' y2='12' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E" type="image/svg+xml">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Tailwind Configuration for Red Theme -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                            950: '#450a0a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            background-color: #09090b;
+            color: #cbd5e1;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; border: 2px solid #09090b; }
+        ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+        
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pulse-border { animation: pulseBorder 2s infinite; }
+        @keyframes pulseBorder {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+<body class="flex h-screen w-full selection:bg-theme-500/30">
+    <!-- LEFT SIDEBAR -->
+    <div class="w-80 bg-[#0c0c0e] border-r border-slate-800/50 h-full flex-shrink-0 z-10 hidden md:flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
+        <div class="p-8 border-b border-slate-800/50 bg-gradient-to-b from-[#111115] to-[#0c0c0e]">
+            <div class="flex items-center gap-5 mb-6">
+                <!-- Theme Controller Icon -->
+                <button onclick="goToHome()" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-theme-500 to-theme-300 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.25)] border border-theme-400/20 shrink-0 hover:scale-105 transition-transform cursor-pointer">
+                    <i data-lucide="gamepad-2" class="text-theme-950 w-7 h-7" stroke-width="2.5"></i>
+                </button>
+                <div>
+                    <h2 class="font-bold text-white text-lg tracking-tight leading-tight">Data Lab Academy</h2>
+                    <div id="sidebar-level" class="text-xs text-theme-400 font-semibold tracking-wider uppercase mt-1 leading-snug">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs mb-1">
+                    <span class="text-slate-400 font-medium tracking-wide">Module Progress</span>
+                    <span id="progress-text" class="text-theme-400 font-mono font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-800/60 rounded-full h-2 overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="bg-gradient-to-r from-theme-500 to-theme-300 h-full transition-all duration-1000 ease-out relative w-0">
+                        <div class="absolute top-0 right-0 bottom-0 w-4 bg-white/30 blur-[2px] rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-6 flex-1 overflow-y-auto">
+            <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-5 flex items-center gap-2">
+                <i data-lucide="layout-list" class="w-3.5 h-3.5"></i> Training Content
+            </h3>
+            <div class="space-y-2.5" id="module-list-container">
+                <!-- Module list injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="flex-1 flex flex-col h-full relative bg-[#09090b]">
+        <!-- Top Navigation -->
+        <div class="h-16 border-b border-slate-800/60 bg-[#0c0c0e]/80 backdrop-blur-xl flex items-center px-6 shrink-0 z-20 sticky top-0 justify-start">
+            <div class="flex h-full gap-4">
+                <button onclick="goToHome()" id="nav-btn-home" class="h-full flex items-center gap-2.5 border-b-2 border-theme-500 text-theme-400 px-2 transition-all duration-300">
+                    <i data-lucide="home" class="w-4 h-4"></i> <span class="font-semibold tracking-wide text-sm">Home</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto relative scroll-smooth p-4 md:p-8" id="main-scroll-area">
+            
+            <!-- HOME VIEW -->
+            <div id="view-home" class="max-w-4xl mx-auto py-8 fade-in">
+                <div class="bg-[#0f1115] border border-slate-800/60 rounded-[2rem] p-8 md:p-14 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-theme-500/10 rounded-full blur-[100px] -mr-48 -mt-48 pointer-events-none transition-all duration-1000"></div>
+                    
+                    <div class="flex flex-col items-center text-center relative z-10">
+                        <div class="p-4 bg-theme-500/10 rounded-2xl mb-6 shadow-inner border border-theme-500/20">
+                            <i data-lucide="graduation-cap" class="text-theme-400 w-10 h-10"></i>
+                        </div>
+                        
+                        <h2 id="home-module-number" class="text-sm font-bold tracking-widest uppercase text-theme-400 mb-4">
+                            <!-- Populated by JS -->
+                        </h2>
+                        
+                        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-100 mb-6 leading-tight tracking-tight">
+                            Welcome to <br/>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-theme-400 to-theme-200">Data Lab Academy</span>
+                        </h1>
+                        
+                        <p id="home-brief" class="text-slate-400 text-lg leading-relaxed mb-12 max-w-2xl mx-auto">
+                            <!-- Populated by JS -->
+                        </p>
+                        
+                        <button onclick="launchGame()" class="bg-theme-500 hover:bg-theme-400 text-theme-950 font-bold py-4 px-10 rounded-2xl transition-all duration-300 flex items-center gap-3 shadow-[0_0_20px_rgba(239,68,68,0.25)] hover:shadow-[0_0_30px_rgba(239,68,68,0.4)] hover:-translate-y-1 text-lg">
+                            <i data-lucide="rocket" class="w-5 h-5"></i> Launch Module
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GAME VIEW -->
+            <div id="view-game" class="max-w-4xl mx-auto pb-40 hidden">
+                <div class="mb-10 flex items-center justify-between bg-theme-500/5 border border-theme-500/10 p-5 rounded-3xl">
+                    <h2 class="text-xl font-bold text-slate-100 flex items-center gap-3">
+                        <i data-lucide="brain-circuit" class="text-theme-400 w-6 h-6"></i> Interactive Challenge
+                    </h2>
+                    <span class="text-xs text-slate-400 font-mono bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">Concept Mastery</span>
+                </div>
+                
+                <div id="game-container"></div>
+                <div id="scroll-anchor" class="h-10"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // --- PROMPT INJECTION AREA ---
+        // ==========================================
+        const INPUT_PROMPT = "Module 1: Practical Efficiency";
+
+        const moduleData = {
+            topic: "Practical Efficiency",
+            brief: "In this module, you will master practical AI efficiency tools to automate workflows, accelerate research, and optimize daily operations. You'll learn to select the right AI systems for various professional scenarios.",
+            steps: [
+                {
+                    type: "Scenario Challenge",
+                    instruction: "**Scenario Challenge: Automating Workflows**\nYou spend hours manually moving data between your email inbox, CRM, and spreadsheets. Which of these systems should you use to connect these apps and automate data transfers without coding?",
+                    options: [
+                        "Canva & Miro",
+                        "Zapier & Make",
+                        "Otter.ai & Zoom AI",
+                        "GitHub Copilot"
+                    ],
+                    correctIndex: 1,
+                    hints: [
+                        "Think about standard workflow automation middleware.",
+                        "These tools trigger actions across different apps (e.g., 'If email received, update CRM')."
+                    ],
+                    successMsg: "Correct! Zapier and Make are industry standards for connecting disparate applications and automating repetitive data entry workflows."
+                },
+                {
+                    type: "Multiple-Choice Quiz",
+                    instruction: "**Multiple-Choice: Meeting Productivity**\nYour team needs a way to automatically transcribe meetings, generate concise summaries, and instantly capture action items. Which AI system specializes in this capability?",
+                    options: [
+                        "Otter.ai",
+                        "Tableau",
+                        "Shopify AI",
+                        "ClickUp AI"
+                    ],
+                    correctIndex: 0,
+                    hints: [
+                        "This system is often represented by a semi-aquatic animal name.",
+                        "It joins your video conference calls as a virtual assistant to take notes."
+                    ],
+                    successMsg: "Excellent! Otter.ai (along with Zoom AI) excels at transcribing meetings and extracting key decisions and action items in real time."
+                },
+                {
+                    type: "Classification Sort",
+                    instruction: "**Concept Check: Data Analysis vs. Project Management**\nMatch the goal: 'Analyze datasets, identify trends, and forecast outcomes' to the correct system pair.",
+                    options: [
+                        "Asana & Trello AI",
+                        "Microsoft Excel Copilot & Tableau",
+                        "Grammarly & Notion AI",
+                        "Salesforce AI & Shopify AI"
+                    ],
+                    correctIndex: 1,
+                    hints: [
+                        "We are looking for data and spreadsheet powerhouses.",
+                        "One of these is a famous data visualization tool, the other is Microsoft's spreadsheet AI."
+                    ],
+                    successMsg: "Spot on! Excel Copilot and Tableau are designed specifically to process, analyze, and visualize data trends."
+                },
+                {
+                    type: "Scenario Challenge",
+                    instruction: "**Scenario Challenge: Customer Support**\nYou run an e-commerce store and want to handle common customer inquiries 24/7 automatically, routing only complex issues to human agents. What is the best solution?",
+                    options: [
+                        "Microsoft Excel Copilot",
+                        "Perplexity AI",
+                        "Intercom & Zendesk AI",
+                        "Asana AI"
+                    ],
+                    correctIndex: 2,
+                    hints: [
+                        "You need a dedicated customer service and helpdesk platform.",
+                        "Look for the options globally known for ticketing systems and live chat."
+                    ],
+                    successMsg: "Perfect! Intercom and Zendesk AI can resolve routine queries instantly via chatbots and escalate smoothly to human agents when needed."
+                },
+                {
+                    type: "Multiple-Choice Quiz",
+                    instruction: "**Multiple-Choice: Coding Efficiency**\nWhich AI system acts as a pair programmer, specifically generating code snippets and suggesting fixes to accelerate software development?",
+                    options: [
+                        "Zendesk AI",
+                        "Coursera AI",
+                        "Miro AI",
+                        "GitHub Copilot"
+                    ],
+                    correctIndex: 3,
+                    hints: [
+                        "It integrates directly into coding IDEs like VS Code.",
+                        "It shares a name with a highly popular code repository platform."
+                    ],
+                    successMsg: "Right! GitHub Copilot helps developers by suggesting entire lines or blocks of code as they type, deeply boosting efficiency."
+                },
+                {
+                    type: "Scenario Challenge",
+                    instruction: "**Scenario Challenge: Deep Research**\nYou need to compare multiple business strategies and gather information from diverse web sources with cited research. Which tool accelerates this specific research process best?",
+                    options: [
+                        "Perplexity AI",
+                        "Canva",
+                        "Trello AI",
+                        "Make"
+                    ],
+                    correctIndex: 0,
+                    hints: [
+                        "This tool acts like an AI-powered conversational search engine.",
+                        "It provides footnoted sources for its claims to ensure accuracy."
+                    ],
+                    successMsg: "Correct! Perplexity AI is a powerful research assistant that pulls from real-time web sources to explain complex topics with citations."
+                },
+                {
+                    type: "Multiple-Choice Quiz",
+                    instruction: "**Multiple-Choice: Marketing Content**\nYour goal is to design visuals and presentations while maintaining consistent branding. Which AI-powered platform is widely adopted for this?",
+                    options: [
+                        "Salesforce AI",
+                        "Canva",
+                        "Otter.ai",
+                        "Zapier"
+                    ],
+                    correctIndex: 1,
+                    hints: [
+                        "It is a universally used web-based graphic design platform.",
+                        "It recently integrated powerful 'Magic' AI tools for image generation."
+                    ],
+                    successMsg: "Yes! Canva’s AI features make it incredibly easy to generate visuals and marketing content rapidly while staying on brand."
+                },
+                {
+                    type: "Scenario Challenge",
+                    instruction: "**Scenario Challenge: Project Management**\nYou are overseeing a 50-person team. You need a system that can assign tasks, predict project delays, and identify bottlenecks in workflows.",
+                    options: [
+                        "Asana & Trello AI",
+                        "Notion & ChatGPT",
+                        "Grammarly & Outlook AI",
+                        "Shopify AI"
+                    ],
+                    correctIndex: 0,
+                    hints: [
+                        "Look for dedicated project management software.",
+                        "Kanban boards and Gantt charts are core features of these platforms."
+                    ],
+                    successMsg: "Exactly! Asana and Trello AI streamline project workflows and proactively flag potential timeline delays."
+                },
+                {
+                    type: "Prompt Challenge",
+                    instruction: "**Prompt Challenge: Writing Assistance**\nYou want an AI to rewrite a harsh email to be more professional. Which tools are most commonly used to draft, rewrite, and improve the tone of documents?",
+                    options: [
+                        "GitHub Copilot & Tableau",
+                        "Miro AI & Make",
+                        "ChatGPT & Grammarly",
+                        "Zendesk AI & Intercom"
+                    ],
+                    correctIndex: 2,
+                    hints: [
+                        "One is the most famous general LLM, the other is a famous writing assistant plugin.",
+                        "They specialize in natural language generation and real-time correction."
+                    ],
+                    successMsg: "Well done! ChatGPT and Grammarly are essential for refining tone, clarity, and readability in professional writing."
+                },
+                {
+                    type: "Scenario Challenge",
+                    instruction: "**Scenario Challenge: Sales & CRM**\nYour sales team needs to predict lead conversion probabilities and generate personalized sales emails based on customer interaction history. Which system fits best?",
+                    options: [
+                        "Salesforce AI",
+                        "Coursera AI",
+                        "Zapier",
+                        "Otter.ai"
+                    ],
+                    correctIndex: 0,
+                    hints: [
+                        "It is the world's leading Customer Relationship Management (CRM) platform.",
+                        "It utilizes a specialized AI assistant often referred to as 'Einstein'."
+                    ],
+                    successMsg: "Module Complete! Salesforce AI analyzes customer data to predict conversions and automate personalized outreach."
+                }
+            ]
+        };
+
+        // --- STATE MANAGEMENT ---
+        let stepStates = {}; 
+        let parsedModuleNumber = "Module 1"; 
+        let parsedModuleName = moduleData.topic; 
+
+        moduleData.steps.forEach((step, index) => {
+            stepStates[index] = {
+                attempts: 0,
+                hintsUsed: 0,
+                completed: false,
+                selectedOption: null
+            };
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            parseInputPrompt();
+            populateDynamicText();
+            buildSidebar();
+            buildGameUI();
+            updateProgress();
+            lucide.createIcons();
+        });
+
+        // --- UI BUILDERS & LOGIC ---
+        function parseInputPrompt() {
+            const moduleMatch = INPUT_PROMPT.match(/Module\s+\d+/i);
+            if (moduleMatch) parsedModuleNumber = moduleMatch[0];
+            const titleMatch = INPUT_PROMPT.match(/Module\s+\d+:\s*([A-Za-z0-9\s&]+)/i);
+            if (titleMatch && titleMatch[1]) {
+                parsedModuleName = titleMatch[1].trim();
+            }
+        }
+
+        function populateDynamicText() {
+            document.getElementById('sidebar-level').innerText = parsedModuleName;
+            document.getElementById('home-module-number').innerText = parsedModuleNumber;
+            document.getElementById('home-brief').innerText = moduleData.brief;
+        }
+
+        function buildSidebar() {
+            const container = document.getElementById('module-list-container');
+            const displayNum = parsedModuleNumber.replace(/[^\d]/g, '') || "1";
+            
+            container.innerHTML = `
+                <div class="text-[10px] font-bold text-theme-500/80 uppercase tracking-widest mt-2 mb-2 px-2 pb-1">
+                    Current Module
+                </div>
+                <div class="p-3 rounded-2xl border transition-all duration-300 bg-theme-500/10 border-theme-500/30 shadow-[0_4px_20px_rgba(239,68,68,0.05)] cursor-pointer">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors bg-theme-500/20 text-theme-400">
+                            <span class="text-sm font-bold">${displayNum}</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-semibold tracking-tight text-slate-100">${parsedModuleName}</div>
+                            <div class="text-[11px] mt-0.5 font-medium text-theme-400/80">${moduleData.steps.length} Challenges</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function buildGameUI() {
+            const container = document.getElementById('game-container');
+            let html = '';
+            
+            moduleData.steps.forEach((step, index) => {
+                const formattedInstruction = step.instruction
+                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-theme-300 font-bold block mb-3 text-lg">$1</strong>')
+                    .replace(/\n/g, '<br>');
+                
+                let optionsHtml = step.options.map((opt, optIdx) => `
+                    <div id="step-${index}-opt-${optIdx}" onclick="selectOption(${index}, ${optIdx})" class="p-4 border-2 border-slate-700 bg-[#121214] rounded-xl cursor-pointer hover:border-theme-500/50 transition-all text-slate-300 flex items-center gap-3 select-none">
+                        <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center font-bold text-sm text-slate-400 shrink-0 option-letter transition-colors">
+                            ${['A','B','C','D'][optIdx]}
+                        </div>
+                        <span class="font-medium text-sm md:text-base leading-snug">${opt}</span>
+                    </div>
+                `).join('');
+
+                html += `
+                <div id="step-container-${index}" class="mb-14 relative group ${index !== 0 ? 'hidden' : 'fade-in'}">
+                    
+                    <div id="step-line-${index}" class="absolute left-8 top-full h-14 w-0.5 bg-slate-800 -z-10 hidden"></div>
+                    
+                    <!-- Question Card -->
+                    <div id="question-card-${index}" class="bg-[#18181b] border border-slate-800/80 rounded-2xl p-6 md:p-8 shadow-lg transition-all duration-500">
+                        <div class="text-slate-300 text-[15px] leading-relaxed mb-6 border-l-[3px] border-theme-500 pl-5">
+                            ${formattedInstruction}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="options-container-${index}">
+                            ${optionsHtml}
+                        </div>
+                        
+                        <!-- Action Bar -->
+                        <div id="action-bar-${index}" class="mt-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border-t border-slate-800/60 pt-6">
+                            <div class="flex gap-3">
+                                <button onclick="handleSubmit(${index})" class="bg-theme-500 hover:bg-theme-400 text-theme-950 font-bold py-3 px-7 rounded-xl transition-all duration-300 flex items-center gap-2 shadow-[0_0_15px_rgba(239,68,68,0.25)] hover:shadow-[0_0_25px_rgba(239,68,68,0.4)] hover:-translate-y-0.5 text-sm">
+                                    <i data-lucide="check" class="w-4 h-4"></i> Submit Answer
+                                </button>
+                                
+                                <button id="hint-btn-${index}" onclick="handleHint(${index})" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-semibold py-3 px-5 rounded-xl transition-all duration-300 flex items-center gap-2 border border-slate-700 text-sm hover:-translate-y-0.5">
+                                    <i data-lucide="lightbulb" class="w-4 h-4"></i> <span id="hint-btn-text-${index}">Get Hint</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Feedback Banner -->
+                            <div id="feedback-banner-${index}" class="hidden flex items-center gap-2.5 text-sm px-5 py-3 rounded-xl border font-medium max-w-md w-full sm:w-auto">
+                                <i id="feedback-icon-${index}" data-lucide="" class="flex-shrink-0 w-4 h-4"></i>
+                                <span id="feedback-text-${index}"></span>
+                            </div>
+                        </div>
+
+                        <!-- Hints Container -->
+                        <div id="hints-container-${index}" class="mt-6 space-y-3 hidden"></div>
+                        
+                    </div>
+                    
+                    <!-- Output Container -->
+                    <div id="output-container-${index}" class="mt-6 hidden">
+                        <div id="success-banner-${index}"></div>
+                    </div>
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // --- INTERACTION LOGIC ---
+        function goToHome() {
+            document.getElementById('view-game').classList.add('hidden');
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('view-home').classList.add('fade-in');
+        }
+
+        function launchGame() {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-game').classList.remove('hidden');
+            document.getElementById('view-game').classList.add('fade-in');
+        }
+
+        function selectOption(index, optIndex) {
+            const state = stepStates[index];
+            if(state.completed) return;
+            
+            state.selectedOption = optIndex;
+            const stepData = moduleData.steps[index];
+            
+            // Clear feedback
+            document.getElementById(`feedback-banner-${index}`).classList.add('hidden');
+
+            stepData.options.forEach((_, i) => {
+                const el = document.getElementById(`step-${index}-opt-${i}`);
+                const letterEl = el.querySelector('.option-letter');
+                
+                if (i === optIndex) {
+                    el.classList.add('border-theme-500', 'bg-theme-500/10');
+                    el.classList.remove('border-slate-700', 'bg-[#121214]');
+                    letterEl.classList.add('bg-theme-500', 'text-theme-950');
+                    letterEl.classList.remove('bg-slate-800', 'text-slate-400');
+                } else {
+                    el.classList.remove('border-theme-500', 'bg-theme-500/10');
+                    el.classList.add('border-slate-700', 'bg-[#121214]');
+                    letterEl.classList.remove('bg-theme-500', 'text-theme-950');
+                    letterEl.classList.add('bg-slate-800', 'text-slate-400');
+                }
+            });
+        }
+
+        function handleSubmit(index) {
+            const state = stepStates[index];
+            const stepData = moduleData.steps[index];
+            if(state.completed) return;
+            
+            if (state.selectedOption === null) {
+                showFeedback(index, 'error', "Please select an option first.");
+                return;
+            }
+
+            state.attempts++;
+
+            if (state.selectedOption === stepData.correctIndex) {
+                // Correct
+                markCompleted(index, stepData.successMsg);
+            } else {
+                // Incorrect
+                if (state.attempts >= 3) {
+                    showFeedback(index, 'error', "Max attempts reached. Showing correct answer...");
+                    selectOption(index, stepData.correctIndex);
+                    setTimeout(() => markCompleted(index, stepData.successMsg), 1500);
+                } else {
+                    showFeedback(index, 'error', `Incorrect. Attempts remaining: ${3 - state.attempts}`);
+                    const selectedEl = document.getElementById(`step-${index}-opt-${state.selectedOption}`);
+                    selectedEl.classList.add('shake', 'border-rose-500', 'bg-rose-500/10');
+                    setTimeout(() => {
+                        selectedEl.classList.remove('shake', 'border-rose-500', 'bg-rose-500/10');
+                    }, 500);
+                }
+            }
+        }
+
+        function handleHint(index) {
+            const state = stepStates[index];
+            const stepData = moduleData.steps[index];
+            if (state.completed) return;
+            
+            const hintsContainer = document.getElementById(`hints-container-${index}`);
+            const hintBtnText = document.getElementById(`hint-btn-text-${index}`);
+            const hintBtn = document.getElementById(`hint-btn-${index}`);
+            
+            if (state.hintsUsed < stepData.hints.length) {
+                hintsContainer.classList.remove('hidden');
+                const hintEl = document.createElement('div');
+                hintEl.className = 'bg-[#131b22] border border-theme-900/30 text-slate-300 px-5 py-4 rounded-xl flex items-start gap-3.5 text-sm shadow-sm fade-in';
+                hintEl.innerHTML = `
+                    <i data-lucide="lightbulb" class="mt-0.5 flex-shrink-0 text-theme-500 w-[18px] h-[18px]"></i>
+                    <div>
+                        <strong class="block text-theme-400 mb-1 font-semibold">Hint ${state.hintsUsed + 1}</strong>
+                        <span class="leading-relaxed">${stepData.hints[state.hintsUsed]}</span>
+                    </div>
+                `;
+                hintsContainer.appendChild(hintEl);
+                lucide.createIcons();
+                state.hintsUsed++;
+
+                if (state.hintsUsed >= stepData.hints.length) {
+                    hintBtnText.innerText = "Show Answer";
+                    hintBtn.classList.replace('text-slate-300', 'text-theme-400');
+                    hintBtn.classList.replace('bg-slate-800/80', 'bg-theme-900/40');
+                    hintBtn.classList.replace('hover:bg-slate-700', 'hover:bg-theme-900/60');
+                    hintBtn.classList.replace('border-slate-700', 'border-theme-700/50');
+                    const iconEl = hintBtn.querySelector('i');
+                    iconEl.setAttribute('data-lucide', 'check-circle');
+                    lucide.createIcons();
+                }
+            } else {
+                // Provide Answer automatically
+                selectOption(index, stepData.correctIndex);
+                showFeedback(index, 'success', "Answer selected! Click Submit to continue.");
+            }
+        }
+
+        function showFeedback(index, type, msg) {
+            const banner = document.getElementById(`feedback-banner-${index}`);
+            const text = document.getElementById(`feedback-text-${index}`);
+            const icon = document.getElementById(`feedback-icon-${index}`);
+            
+            banner.classList.remove('hidden');
+            text.innerText = msg;
+            
+            if (type === 'error') {
+                banner.className = 'flex items-center gap-2.5 text-sm px-5 py-3 rounded-xl border font-medium max-w-md w-full sm:w-auto fade-in bg-rose-950/40 text-rose-400 border-rose-900/50';
+                icon.setAttribute('data-lucide', 'alert-circle');
+            } else {
+                banner.className = 'flex items-center gap-2.5 text-sm px-5 py-3 rounded-xl border font-medium max-w-md w-full sm:w-auto fade-in bg-theme-950/40 text-theme-400 border-theme-900/50';
+                icon.setAttribute('data-lucide', 'check-circle');
+            }
+            lucide.createIcons();
+        }
+
+        function markCompleted(index, successMsg) {
+            const state = stepStates[index];
+            const stepData = moduleData.steps[index];
+            state.completed = true;
+            
+            // Hide action buttons
+            document.getElementById(`action-bar-${index}`).classList.add('hidden'); 
+            document.getElementById(`question-card-${index}`).classList.replace('border-slate-800/80', 'border-theme-500/30');
+
+            // Lock options and style correct
+            stepData.options.forEach((_, i) => {
+                const el = document.getElementById(`step-${index}-opt-${i}`);
+                const letterEl = el.querySelector('.option-letter');
+                el.style.pointerEvents = 'none'; 
+                
+                if (i === stepData.correctIndex) {
+                    el.classList.add('border-green-500/50', 'bg-green-500/10');
+                    el.classList.remove('border-theme-500', 'bg-theme-500/10', 'border-slate-700');
+                    letterEl.classList.add('bg-green-500', 'text-green-950');
+                    letterEl.classList.remove('bg-theme-500', 'bg-slate-800', 'text-slate-400');
+                } else {
+                    el.classList.add('opacity-40');
+                    el.classList.remove('hover:border-theme-500/50');
+                }
+            });
+            
+            // Show Output Banner
+            const outputContainer = document.getElementById(`output-container-${index}`);
+            outputContainer.classList.remove('hidden');
+            outputContainer.classList.add('fade-in');
+            
+            const successBanner = document.getElementById(`success-banner-${index}`);
+            successBanner.innerHTML = `
+                <div class="bg-[#18181b] border-2 border-green-500/30 px-6 py-5 rounded-2xl flex items-start gap-4 shadow-lg text-slate-300 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-green-500/5 pointer-events-none"></div>
+                    <i data-lucide="check-circle-2" class="w-6 h-6 flex-shrink-0 text-green-500 mt-0.5"></i>
+                    <div>
+                        <strong class="block text-green-400 mb-1 font-bold tracking-wide">Excellent!</strong>
+                        <span class="leading-relaxed text-sm md:text-base">${successMsg}</span>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+            updateProgress();
+            
+            setTimeout(() => {
+                unlockNextStep(index);
+            }, 1500);
+        }
+
+        function unlockNextStep(currentIndex) {
+            const nextIndex = currentIndex + 1;
+            const line = document.getElementById(`step-line-${currentIndex}`);
+            if(line) line.classList.remove('hidden');
+            
+            if (nextIndex < moduleData.steps.length) {
+                const nextContainer = document.getElementById(`step-container-${nextIndex}`);
+                nextContainer.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    document.getElementById('scroll-anchor').scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }, 100);
+            } else {
+                showModuleComplete();
+            }
+        }
+
+        function updateProgress() {
+            let completedCount = 0;
+            for(let key in stepStates) {
+                if(stepStates[key].completed) completedCount++;
+            }
+            const total = moduleData.steps.length;
+            const percent = Math.round((completedCount / total) * 100);
+            
+            document.getElementById('progress-text').innerText = `${percent}%`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+        }
+
+        function showModuleComplete() {
+            const container = document.getElementById('game-container');
+            const compHtml = `
+                <div class="mt-14 fade-in pb-10 flex flex-col items-center">
+                    <div class="w-24 h-24 bg-theme-500/10 rounded-full flex items-center justify-center mb-6 relative pulse-border border border-theme-500/30">
+                        <i data-lucide="award" class="w-12 h-12 text-theme-400"></i>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-slate-100 mb-3 tracking-tight">Module Completed!</h2>
+                    <p class="text-slate-400 mb-10 max-w-md text-center text-lg">Excellent work. You have mastered ${parsedModuleName}.</p>
+                    
+                    <button onclick="goToHome()" class="bg-theme-500 hover:bg-theme-400 text-theme-950 font-bold py-4 px-10 rounded-2xl transition-all duration-300 flex items-center gap-2 shadow-[0_0_20px_rgba(239,68,68,0.25)] hover:shadow-[0_0_30px_rgba(239,68,68,0.4)] hover:-translate-y-1 text-lg">
+                        Return to Home <i data-lucide="arrow-right" class="w-5 h-5 ml-1"></i>
+                    </button>
+                </div>
+            `;
+            
+            const div = document.createElement('div');
+            div.innerHTML = compHtml;
+            container.appendChild(div);
+            lucide.createIcons();
+            setTimeout(() => {
+                document.getElementById('scroll-anchor').scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 200);
+        }
+    </script>
+</body>
+</html>
